@@ -1,0 +1,107 @@
+
+1º Instala o aaPanel
+
+sudo apt update && sudo apt upgrade -y
+
+wget -O install.sh http://www.aapanel.com/script/install-ubuntu_6.0_en.sh && sudo bash install.sh aapanel
+
+- Configurar apps: Nginx 1.21.4; Pm2 com node 16.20.0; Redis 7.0.5; PostgreSQL Version 14.2; Linux Tools
+
+- Criar o banco de dados no Postgre
+
+- Criar senha no Redis
+
+- Selecionar Time Zone correto para America/São_Paulo
+
+
+2º Aponstar 2 Subdominios para a VPS de instalação, ideal usar o cloudflare
+
+
+3º Iniciar instalação do Whaticket
+
+Abrir terminal em files
+
+  sudo apt-get install -y libgbm-dev wget unzip fontconfig locales gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils git
+
+  sudo apt-get install build-essential
+
+  sudo apt update && sudo apt upgrade -y
+
+  git clone https://github.com/w3nder/whaticket-free.git
+
+  Renomear o arquivo .env.example para .env
+
+NODE_ENV=
+BACKEND_URL=https://seudominio.com.br
+FRONTEND_URL=https://seudominio.com.br
+PROXY_PORT=443
+PORT=8085
+
+DB_DIALECT=postgres
+DB_HOST=localhost
+DB_USER=unkbot
+DB_PASS=Suasenha
+DB_NAME=unkbot
+
+JWT_SECRET=asdsad
+JWT_REFRESH_SECRET=asdasd
+
+REDIS_URI=redis://:suaSenha@127.0.0.1:6379
+REDIS_OPT_LIMITER_MAX=1
+REDIS_OPT_LIMITER_DURATION=3000
+
+
+Abrir terminal dentro da pasta backend
+
+ npm install
+ npm run build
+ npm run db:migrate
+ npm run db:seed
+
+Voltar na pasta principal tirar e aplicar a permisão novamente
+
+npm uninstall @adiwajshing/baileys
+npm install @adiwajshing/baileys
+
+
+Navegar até a pasta do frontend
+
+ Renomear o arquivo .env.example para .env
+
+ REACT_APP_BACKEND_URL=https://URL_DO_BACKEND(NAO E URL DO FRONTEND)
+ REACT_APP_HOURS_CLOSE_TICKETS_AUTO = 24
+
+Abrir terminal dentro da pasta do frontend
+
+ npm install
+ npm run build
+
+ Abrir portas
+
+5432 (PostgreSQL)
+6379 (Redis)
+8081 (Backend)
+3333 (frontend)
+
+
+
+4º Iniciar backend e frontend, mapear os dominios e instalar o SSL
+
+5º Ajustar os caches:
+
+Site > backend/ configurações/ config
+Depois de -> error_page 497  https://$host$request_uri;
+
+Adiciona -> underscores_in_headers on;
+
+Site > backend/ configurações/ reverse proxy
+
+Adiciona isso
+
+    proxy_cache_bypass $http_upgrade;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+
+
+Reiniciar o nginx
